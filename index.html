@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Expense Tracker | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* ===== BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial
+        }
+
+        body {
+            min-height: 100vh;
+            color: #ffffff;
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #000);
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: rgba(0, 0, 0, 0.07);
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+        }
+
+        header h2 {
+            color: #00eaff;
+            font-size: 22px;
+        }
+
+        /* 🔥 Button micro animation */
+        header button {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: none;
+            background: #00c8ff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 12px #00eaff;
+        }
+
+        header button:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 40px 20px;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 520px;
+            animation: fadeUp 1s
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px)
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        /* 🔥 Typing glow wave */
+        .typing {
+            font-size: 3rem;
+            color: #00eaff;
+            min-height: 80px;
+            animation: glowText 2s infinite alternate;
+        }
+
+        @keyframes glowText {
+            from {
+                text-shadow: 0 0 5px #00eaff;
+            }
+
+            to {
+                text-shadow: 0 0 20px #00ffff;
+            }
+        }
+
+        .hero-text p {
+            margin: 15px 0;
+            line-height: 1.6
+        }
+
+        /* 🔥 CTA button pulse */
+        .hero-text button {
+            padding: 14px 30px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(45deg, #00c8ff, #00ffcca9);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgb(0, 255, 255);
+            animation: pulse 2s infinite;
+            transition: 0.3s;
+        }
+
+        .hero-text button:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 15px cyan;
+            }
+
+            50% {
+                box-shadow: 0 0 35px cyan;
+            }
+
+            100% {
+                box-shadow: 0 0 15px cyan;
+            }
+        }
+
+        /* ===== GLASS CARD ===== */
+        .glass {
+            width: 320px;
+            max-width: 95%;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 0 40px rgba(0, 198, 255, .7);
+            animation: float 3s ease-in-out infinite, glowCard 2s infinite alternate;
+        }
+
+        /* 🔥 Card glow */
+        @keyframes glowCard {
+            from {
+                box-shadow: 0 0 25px rgba(0, 255, 255, .4);
+            }
+
+            to {
+                box-shadow: 0 0 55px rgba(0, 255, 255, .9);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-15px)
+            }
+        }
+
+        .glass h3 {
+            text-align: center;
+            color: #00eaff;
+            margin-bottom: 15px
+        }
+
+        /* 🔥 Feature hover lift */
+        .feature {
+            background: rgba(0, 0, 0, .4);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: .6s;
+        }
+
+        .feature.show {
+            opacity: 1;
+            transform: translateX(0)
+        }
+
+        .feature:hover {
+            transform: scale(1.05);
+            background: rgba(0, 255, 255, .2);
+        }
+
+        /* ===== SPLASH ===== */
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, #1b2735, #090a0f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        #splash h1 {
+            font-size: 3rem;
+            color: #00eaff;
+            text-align: center;
+            animation: zoom 1.5s ease forwards;
+        }
+
+        @keyframes zoom {
+            from {
+                transform: scale(.5);
+                opacity: 0
+            }
+
+            to {
+                transform: scale(1.1);
+                opacity: 1
+            }
+        }
+
+        #splash p {
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+            header {
+                padding: 10px 15px;
+                height: auto;
+                gap: 10px;
+            }
+
+            header h2 {
+                font-size: 18px;
+            }
+
+            .typing {
+                font-size: 2rem;
+                min-height: 60px;
+            }
+
+            .hero {
+                padding: 20px 15px;
+                text-align: center;
+            }
+
+            .hero-text button {
+                width: 100%;
+            }
+
+            .glass {
+                width: 100%;
+            }
+
+            #splash h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="splash">
+        <h1>💸 Daily Expense Tracker System</h1>
+        <p>Smart Money • Smart Life</p>
+    </div>
+
+    <canvas id="stars"></canvas>
+
+    <header>
+        <h2>💸 Expense Tracker</h2>
+        <div id="userBox" style="color:#00eaff;font-weight:bold"></div>
+        <div id="topBtns">
+            <button onclick="goLogin()">Login</button>
+            <button onclick="goRegister()">Register</button>
+        </div>
+    </header>
+
+    <section class="hero">
+
+        <div class="hero-text">
+            <div class="typing" id="typing"></div>
+
+            <p>📍 Daily Expense Tracker helps you record and manage daily spending easily.</p>
+            <p>📍 Add amount, category, date and bill image.</p>
+            <p>✨ Track where your money goes and improve savings.</p>
+            <p>🎯 Perfect for students and working people.</p>
+            <p>🔐 Data stored securely in your browser.</p>
+
+            <button id="startBtn" onclick="goDashboard()" style="display:none">
+                Start Tracking Now 🚀
+            </button>
+
+            <p style="margin-top:15px;color:#00eaffa1;font-weight:bold">
+                👉 Create account and start managing today!
+            </p>
+        </div>
+
+        <div class="glass">
+            <h3>🔥 Features</h3>
+            <div class="feature">✔ Daily Expense Entry</div>
+            <div class="feature">✔ Voice Input 🎤</div>
+            <div class="feature">✔ Bill Upload</div>
+            <div class="feature">✔ PDF Report</div>
+            <div class="feature">✔ Secure Login</div>
+            <div class="feature">✔ Smart Total</div>
+        </div>
+
+    </section>
+
+    <script>
+        /* ===== LOGIN CHECK ===== */
+        window.onload = function () {
+            let logged = sessionStorage.getItem("loggedIn");
+            if (logged === "true") {
+                let user = JSON.parse(localStorage.getItem("user"));
+                document.getElementById("startBtn").style.display = "block";
+                document.getElementById("userBox").innerHTML =
+                    "Hi, " + (user ? user.name : "User") + " 👋";
+                document.getElementById("topBtns").innerHTML =
+                    '<button onclick="logout()">Logout</button>';
+            }
+        }
+
+        /* ===== TYPING EFFECT ===== */
+        let text = "Daily Expense Tracker System";
+        let i = 0, typing = document.getElementById("typing");
+        (function type() {
+            if (i < text.length) {
+                typing.innerHTML += text.charAt(i++);
+                setTimeout(type, 80);
+            }
+        })();
+
+        /* ===== STARS ===== */
+        const c = document.getElementById("stars"), ctx = c.getContext("2d");
+        function resizeCanvas() {
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        let stars = [...Array(120)].map(() => ({
+            x: Math.random() * c.width,
+            y: Math.random() * c.height,
+            r: Math.random() * 2,
+            s: Math.random() + .3
+        }));
+
+        (function anim() {
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.fillStyle = "white";
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+                s.y += s.s;
+                if (s.y > c.height) s.y = 0;
+            });
+            requestAnimationFrame(anim);
+        })();
+
+        /* ===== FEATURES LOOP ===== */
+        const f = document.querySelectorAll(".feature");
+        let idx = 0;
+        (function show() {
+            f.forEach(x => x.classList.remove("show"));
+            idx = 0;
+            let int = setInterval(() => {
+                if (idx < f.length) f[idx++].classList.add("show");
+                else { clearInterval(int); setTimeout(show, 2000); }
+            }, 500);
+        })();
+
+        /* ===== NAV ===== */
+        function goLogin() { location.href = "login.html"; }
+        function goRegister() { location.href = "register.html"; }
+        function goDashboard() { location.href = "dashboard.html"; }
+        function logout() {
+            sessionStorage.removeItem("loggedIn");
+            location.href = "login.html";
+        }
+
+        /* ===== SPLASH HIDE ===== */
+        setTimeout(() => {
+            document.getElementById("splash").style.display = "none";
+        }, 2500);
+    </script>
+
+</body>
+
+<footer style="text-align:center;padding:15px;color:#aaa;background:#00000055">
+    © 2026 Daily Expense Tracker | Designed by GKY
+</footer>
+
+</html>

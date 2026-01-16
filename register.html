@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+
+    <!-- 📱 Mobile Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* --- SAME CSS (NO CHANGE) --- */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg,
+                    #0f2027,
+                    #203a43,
+                    #2c5364,
+                    #000);
+            background-size: 400% 400%;
+            animation: bg 10s infinite;
+            color: white;
+            padding: 12px;
+        }
+
+        @keyframes bg {
+            0% {
+                background-position: 0%
+            }
+
+            50% {
+                background-position: 100%
+            }
+
+            100% {
+                background-position: 0%
+            }
+        }
+
+        .glow {
+            padding: 3px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, #00eeff00, #00ffd500);
+            box-shadow: 0 0 40px #00f2ff;
+            width: 100%;
+            max-width: 420px;
+            animation: glowPulse 3s infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            from {
+                box-shadow: 0 0 20px #00f2ff;
+            }
+
+            to {
+                box-shadow: 0 0 50px #00f2ff;
+            }
+        }
+
+        .card {
+            width: 100%;
+            background: #2f7e8e;
+            border-radius: 18px;
+            padding: 26px 22px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.764);
+            animation: floatCard 4s ease-in-out infinite;
+        }
+
+        @keyframes floatCard {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #00eaffc1;
+            font-size: 22px;
+        }
+
+        .field {
+            position: relative;
+            margin: 12px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 14px;
+            background: #222;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder {
+            color: #fffdfd;
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 1.5px #00eaff, 0 0 12px #00eaff;
+            transform: scale(1.02);
+        }
+
+        .show {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00eaff;
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .show:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #00d0ff93;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 5px 20px #00eaff;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .success {
+            animation: success 0.6s;
+        }
+
+        @keyframes success {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .footer {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .footer a {
+            color: #00eaff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow">
+        <div class="card" id="card">
+
+            <h2>Create Account</h2>
+
+            <form onsubmit="register(); return false;">
+
+                <div class="field">
+                    <input id="name" placeholder="Full Name">
+                </div>
+
+                <div class="field">
+                    <input id="userid" placeholder="User ID">
+                </div>
+
+                <div class="field">
+                    <input id="email" placeholder="Email">
+                </div>
+
+                <div class="field">
+                    <input type="password" id="pass" placeholder="Password">
+                    <span class="show" onclick="toggle(pass)">Show</span>
+                </div>
+
+                <div class="field">
+                    <input type="password" id="cpass" placeholder="Confirm Password">
+                    <span class="show" onclick="toggle(cpass)">Show</span>
+                </div>
+
+                <button type="submit">Register</button>
+
+            </form>
+
+            <div class="footer">
+                Already have account? <a href="login.html">Login</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggle(x) {
+            x.type = x.type === "password" ? "text" : "password";
+        }
+
+        function register() {
+
+            let card = document.getElementById("card");
+
+            let n = document.getElementById("name").value.trim();
+            let u = document.getElementById("userid").value.trim();
+            let e = document.getElementById("email").value.trim();
+            let p = document.getElementById("pass").value;
+            let cp = document.getElementById("cpass").value;
+
+            if (n == "" || u == "" || e == "" || p == "" || cp == "") {
+                shake();
+                alert("Fill all fields");
+                return;
+            }
+
+            // ✅ USER ID must contain "-"
+            if (!u.includes("-")) {
+                shake();
+                alert("User ID must contain (-)");
+                return;
+            }
+
+            // ✅ PASSWORD must contain "@"
+            if (!p.includes("@")) {
+                shake();
+                alert("Password must contain (@)");
+                return;
+            }
+
+            // ✅ STRONG PASSWORD RULE
+            let strong = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+            if (!strong.test(p)) {
+                shake();
+                alert("Password must have minimum 6 characters, 1 capital letter and 1 number");
+                return;
+            }
+
+            if (p !== cp) {
+                shake();
+                alert("Password not match");
+                return;
+            }
+
+            let user = {
+                name: n,
+                userid: u,
+                email: e,
+                password: p
+            };
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            users.push(user);
+            localStorage.setItem("user", JSON.stringify(user));
+            sessionStorage.setItem("loggedIn", "true");
+
+            card.classList.add("success");
+            alert("Registered Successfully 🎉");
+            location.href = "index.html";
+        }
+
+        function shake() {
+            let card = document.getElementById("card");
+            card.classList.add("shake");
+            setTimeout(() => card.classList.remove("shake"), 400);
+        }
+    </script>
+
+</body>
+
+</html>

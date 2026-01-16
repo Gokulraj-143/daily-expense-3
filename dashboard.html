@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Expense Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #000);
+            color: rgba(0, 242, 255, 0.904);
+            padding: 10px;
+        }
+
+        /* 🔥 Card fade */
+        .card {
+            width: 100%;
+            max-width: 820px;
+            background: rgba(53, 165, 230, 0.326);
+            backdrop-filter: blur(12px);
+            padding: 15px;
+            border-radius: 14px;
+            text-align: center;
+            animation: cardIn .7s ease;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: scale(.95) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        h2 {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        /* 🔥 Input glow */
+        input,
+        select {
+            background: #222;
+            color: white;
+            transition: .3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 12px cyan;
+            transform: scale(1.02);
+        }
+
+        /* 🔥 Button micro */
+        button {
+            background: #00ddffb1;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 0 12px cyan;
+        }
+
+        button:active {
+            transform: scale(.95);
+        }
+
+        .row {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* 🎤 Mic pulse */
+        .mic {
+            width: 55px;
+            background: rgba(0, 255, 221, 0.712);
+            font-size: 18px;
+            animation: micPulse 1.8s infinite;
+        }
+
+        @keyframes micPulse {
+            0% {
+                box-shadow: 0 0 0 rgba(0, 255, 255, .4);
+            }
+
+            70% {
+                box-shadow: 0 0 18px rgba(0, 255, 255, .9);
+            }
+
+            100% {
+                box-shadow: 0 0 0 rgba(0, 255, 255, .4);
+            }
+        }
+
+        .table-box {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        td,
+        th {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* 🔥 Row hover */
+        tbody tr {
+            transition: .3s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 255, 255, .08);
+            transform: scale(1.01);
+        }
+
+        /* 🔥 Row entry animation */
+        tbody tr {
+            animation: rowIn .4s ease;
+        }
+
+        @keyframes rowIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 🔥 Image hover zoom */
+        img {
+            width: 40px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: .3s;
+        }
+
+        img:hover {
+            transform: scale(1.4);
+        }
+
+        /* 🔥 Total glow */
+        #total {
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 18px;
+            animation: totalGlow 2s infinite alternate;
+        }
+
+        @keyframes totalGlow {
+            from {
+                text-shadow: 0 0 5px cyan;
+            }
+
+            to {
+                text-shadow: 0 0 20px cyan;
+            }
+        }
+
+        /* 🔥 Action buttons wiggle */
+        td button:hover {
+            animation: wiggle .3s;
+        }
+
+        @keyframes wiggle {
+            0% {
+                transform: rotate(0);
+            }
+
+            25% {
+                transform: rotate(-5deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+
+            75% {
+                transform: rotate(-3deg);
+            }
+
+            100% {
+                transform: rotate(0);
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h2><b>Daily Expense Tracker</b></h2>
+
+        <div class="row">
+            <input id="title" placeholder="Expense Title">
+            <button class="mic" onclick="voice()">🎤</button>
+        </div>
+
+        <input id="amount" type="number" placeholder="Amount">
+        <input id="date" type="date">
+
+        <select id="category">
+            <option value="">-- Select Category --</option>
+            <option>🍔 Food</option>
+            <option>🚕 Transport</option>
+            <option>🏠 Rent</option>
+            <option>💡 Electricity / Water</option>
+            <option>📱 Mobile / Internet</option>
+            <option>🛒 Groceries</option>
+            <option>🏥 Medical</option>
+            <option>🎓 Education</option>
+            <option>🎉 Entertainment</option>
+            <option>🛍 Shopping</option>
+            <option>❓ Others</option>
+        </select>
+
+        <input id="bill" type="file" accept="image/*">
+
+        <button onclick="add()">Add / Update Expense</button>
+
+        <h3 id="total">Total : ₹0</h3>
+
+        <button onclick="downloadReport()">⬇️ Download Report Page</button>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Bill</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="list"></tbody>
+            </table>
+        </div>
+
+        <button onclick="logout()">Logout</button>
+
+        <footer>© 2026 Daily Expense Tracker | Designed by GKY</footer>
+
+    </div>
+
+    <script>
+        if (sessionStorage.getItem("loggedIn") !== "true") location.href = "login.html";
+
+        let arr = JSON.parse(localStorage.getItem("exp")) || [];
+        let editId = -1;
+
+        function add() {
+            if (!title.value || !amount.value || !date.value || !category.value) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            if (bill.files[0]) {
+                let r = new FileReader();
+                r.onload = () => save(r.result);
+                r.readAsDataURL(bill.files[0]);
+            } else save("");
+
+            function save(pic) {
+                let obj = { t: title.value, a: +amount.value, c: category.value, d: date.value, b: pic };
+
+                if (editId === -1) arr.push(obj);
+                else { arr[editId] = obj; editId = -1; }
+
+                localStorage.setItem("exp", JSON.stringify(arr));
+                clear(); render();
+            }
+        }
+
+        function render() {
+            list.innerHTML = "";
+            let tot = 0;
+
+            arr.forEach((e, i) => {
+                tot += e.a;
+                list.innerHTML += `
+<tr>
+<td>${e.t}</td>
+<td>₹${e.a}</td>
+<td>${e.c}</td>
+<td>${e.d}</td>
+<td>${e.b ? `<img src="${e.b}" onclick="view('${e.b}')">` : "-"}</td>
+<td>
+<button onclick="edit(${i})">✏️</button>
+<button onclick="del(${i})">🗑️</button>
+</td>
+</tr>`;
+            });
+
+            total.innerText = "Total : ₹" + tot;
+        }
+
+        function del(i) {
+            if (confirm("Delete this expense?")) {
+                arr.splice(i, 1);
+                localStorage.setItem("exp", JSON.stringify(arr));
+                render();
+            }
+        }
+
+        function edit(i) {
+            let e = arr[i];
+            title.value = e.t;
+            amount.value = e.a;
+            category.value = e.c;
+            date.value = e.d;
+            editId = i;
+        }
+
+        function view(src) {
+            let w = window.open();
+            w.document.write(`<img src="${src}" style="width:100%">`);
+        }
+
+        function clear() {
+            title.value = "";
+            amount.value = "";
+            date.value = "";
+            category.value = "";
+            bill.value = "";
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            location.href = "login.html";
+        }
+
+        function voice() {
+            let r = new webkitSpeechRecognition();
+            r.lang = "en-IN";
+            r.onresult = e => title.value = e.results[0][0].transcript;
+            r.start();
+        }
+
+        /* ✅ REPORT PAGE OPEN FUNCTION */
+        function downloadReport() {
+            window.open("report.html", "_blank");
+        }
+
+        render();
+    </script>
+
+</body>
+
+</html>

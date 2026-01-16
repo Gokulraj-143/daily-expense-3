@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Email OTP Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg,
+                    #0f2027,
+                    #203a43,
+                    #2c5364,
+                    #000);
+            background-size: 400% 400%;
+            animation: bg 10s infinite, fadeIn 1.2s ease;
+            color: white;
+            padding: 12px;
+        }
+
+        @keyframes bg {
+            0% {
+                background-position: 0%
+            }
+
+            50% {
+                background-position: 100%
+            }
+
+            100% {
+                background-position: 0%
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: #137c918d;
+            backdrop-filter: blur(12px);
+            padding: 22px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 0 40px cyan;
+            animation: pop 1s ease;
+            transition: 0.3s ease;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            margin-top: 5px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: 0.25s ease;
+        }
+
+        input {
+            background: #222;
+            color: white;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 12px #00eaff;
+            transform: scale(1.03);
+        }
+
+        button {
+            background: #00c6ff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            box-shadow: 0 0 18px #00eaff;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .otp-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            animation: otpPop 0.6s ease;
+        }
+
+        @keyframes otpPop {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .otp-box input {
+            width: 55px;
+            height: 55px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        a {
+            color: #00eaff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            text-shadow: 0 0 6px #00eaff;
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .success {
+            animation: success 0.6s ease;
+        }
+
+        @keyframes success {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 👁 Show Password Button */
+        .pass-box {
+            position: relative;
+        }
+
+        .show {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 13px;
+            color: #00eaff;
+            user-select: none;
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 18px;
+            }
+
+            input,
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .otp-box input {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card" id="card">
+
+        <h2>Forgot Password</h2>
+
+        <!-- STEP 1 -->
+        <div id="step1">
+            <input id="email" placeholder="Registered Email">
+            <button onclick="sendOTP()">Send OTP</button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="hide">
+            <p>Enter OTP</p>
+
+            <div class="otp-box">
+                <input maxlength="1" id="o1" oninput="move(1)">
+                <input maxlength="1" id="o2" oninput="move(2)">
+                <input maxlength="1" id="o3" oninput="move(3)">
+                <input maxlength="1" id="o4" oninput="move(4)">
+            </div>
+
+            <button onclick="verifyOTP()">Verify OTP</button>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" class="hide">
+
+            <!-- 👁 New Password -->
+            <div class="pass-box">
+                <input id="newpass" type="password" placeholder="New Password">
+                <span class="show" onclick="toggle(newpass)">Show</span>
+            </div>
+
+            <!-- 👁 Confirm Password -->
+            <div class="pass-box">
+                <input id="confpass" type="password" placeholder="Confirm Password">
+                <span class="show" onclick="toggle(confpass)">Show</span>
+            </div>
+
+            <button onclick="resetPass()">Reset Password</button>
+        </div>
+
+        <br>
+        <a href="login.html">Back to Login</a>
+
+    </div>
+
+    <script>
+        let realOTP = "";
+        let user = JSON.parse(localStorage.getItem("user"));
+        let card = document.getElementById("card");
+
+        function sendOTP() {
+            let em = email.value.trim();
+
+            if (!em) {
+                alert("Enter email");
+                shake();
+                return;
+            }
+
+            if (!user || em !== user.email) {
+                alert("Email not registered ❌");
+                shake();
+                return;
+            }
+
+            realOTP = Math.floor(1000 + Math.random() * 9000);
+            alert("Demo OTP : " + realOTP);
+
+            step1.classList.add("hide");
+            step2.classList.remove("hide");
+            success();
+        }
+
+        function move(n) {
+            if (document.getElementById("o" + n).value && n < 4)
+                document.getElementById("o" + (n + 1)).focus();
+        }
+
+        function verifyOTP() {
+            let otp = o1.value + o2.value + o3.value + o4.value;
+
+            if (otp.length < 4) {
+                alert("Enter full OTP");
+                shake();
+                return;
+            }
+
+            if (otp == realOTP) {
+                step2.classList.add("hide");
+                step3.classList.remove("hide");
+                success();
+            } else {
+                alert("Wrong OTP ❌");
+                shake();
+            }
+        }
+
+        function resetPass() {
+            let p = newpass.value;
+            let cp = confpass.value;
+
+            if (!p || !cp) {
+                alert("Fill all fields");
+                shake();
+                return;
+            }
+
+            if (!p.includes("@")) {
+                alert("Password must contain (@)");
+                shake();
+                return;
+            }
+
+            let strong = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+            if (!strong.test(p)) {
+                alert("Password must contain minimum 6 characters, 1 capital letter and 1 number");
+                shake();
+                return;
+            }
+
+            if (p !== cp) {
+                alert("Password not match");
+                shake();
+                return;
+            }
+
+            user.password = p;
+            localStorage.setItem("user", JSON.stringify(user));
+
+            alert("Password Reset Successful ✅");
+            location.href = "login.html";
+        }
+
+        function toggle(x) {
+            x.type = x.type === "password" ? "text" : "password";
+        }
+
+        function shake() {
+            card.classList.add("shake");
+            setTimeout(() => card.classList.remove("shake"), 400);
+        }
+
+        function success() {
+            card.classList.add("success");
+            setTimeout(() => card.classList.remove("success"), 600);
+        }
+    </script>
+
+</body>
+
+</html>
